@@ -5,7 +5,7 @@ class wp::cli (
 	$version      = 'dev-master',
 
 ) inherits wp {
-	if $::osfamily == 'Windows' {
+	if $facts['os']['family'] == 'Windows' {
 		Package { provider => 'chocolatey' }
 	}
 
