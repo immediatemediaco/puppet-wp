@@ -17,8 +17,9 @@ define wp::plugin (
     $network = ' --network'
   }
 
-  if ( $version != 'latest' ) {
-    $held = " --version=${version}"
+  $held = $version ? {
+    'latest' => '',
+    default  => "--version=${version}"
   }
 
   if ( empty( $all ) ) {
