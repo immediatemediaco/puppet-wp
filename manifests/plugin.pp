@@ -39,7 +39,7 @@ define wp::plugin (
 			$unless_check = "${wp::params::bin_path}/wp plugin is-installed ${slug}"
 		}
 		disabled: {
-			$command = "${wp::params::bin_path}/wp plugin deactivate ${slug}"
+			$command = "deactivate ${slug}"
 		}
 		installed: {
 			$command = "install ${slug} ${held}"
