@@ -13,8 +13,14 @@ define wp::plugin (
 ) {
   include wp::cli
 
-  if ( $networkwide ) {
-    $network = ' --network'
+  $network = $networkwide ? {
+    true    => '--network',
+    default => '',
+  }
+
+  $network_enabled = $networkwide ? {
+    true    => '-network',
+    default => '',
   }
 
   $held = $version ? {
@@ -23,39 +29,40 @@ define wp::plugin (
   }
 
   if ( empty( $all ) ) {
-    $delete_all_plugins = ' --all'
+    $delete_all_plugins = '--all'
   }
 
   if ( empty( $skipdelete ) ) {
-    $skip_deleting_plugins = ' --skip-delete'
+    $skip_deleting_plugins = '--skip-delete'
   }
 
   case $ensure {
     activate: {
-      $command = "activate ${slug} ${held}"
-      $unless_check = "${wp::params::bin_path}/wp plugin is-active ${slug}"
+      $command = "activate ${slug} ${network}"
+      $unless_check = "${wp::params::bin_path}/wp plugin is-active ${slug} ${network}"
     }
     enabled: {
-      $command = "install ${slug} --activate ${held}"
-      $unless_check = "${wp::params::bin_path}/wp plugin is-installed ${slug}"
+      $command = "install ${slug} --activate${network_enabled} ${held}"
+      $unless_check = "${wp::params::bin_path}/wp plugin is-active ${slug} ${network}"
     }
     disabled: {
-      $command = "${wp::params::bin_path}/wp plugin deactivate ${slug}"
+      $command = "deactivate ${slug} ${network}"
     }
     installed: {
       $command = "install ${slug} ${held}"
       $unless_check = "${wp::params::bin_path}/wp plugin is-installed ${slug}"
     }
     deleted: {
-      $command = "delete ${slug}${delete_all_plugins}"
+      $command = "delete ${slug} ${delete_all_plugins}"
     }
     uninstalled: {
-      $command = "uninstall ${slug} --deactivate${skip_deleting_plugins}"
+      $command = "uninstall ${slug} --deactivate ${skip_deleting_plugins}"
     }
     default: {
       fail('Invalid ensure argument passed into wp::plugin')
     }
   }
+
   wp::command { "${location} ${command}":
     location => $location,
     command  => "plugin ${command}",
