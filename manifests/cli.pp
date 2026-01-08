@@ -2,7 +2,7 @@
 class wp::cli (
 	$ensure       = 'installed',
 	$install_path = '/usr/local/src/wp-cli',
-	$version      = 'dev-master',
+	$version      = 'dev-main',
 
 ) inherits wp {
 	if $facts['os']['family'] == 'Windows' {
@@ -17,7 +17,7 @@ class wp::cli (
 
 		archive { 'wp-cli download':
 			ensure => present,
-			source => 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
+			source => 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli-nightly.phar',
 			path   => "${install_path}/bin/wp-cli.phar",
 		}
 
